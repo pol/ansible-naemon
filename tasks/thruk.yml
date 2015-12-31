@@ -1,11 +1,12 @@
 ---
 
 - name: install thruk and dependancies
-  apt: name={{ item }} update_cache=yes state=present
+  yum: name={{ item }} update_cache=yes state=present
   with_items:
-    - naemon-thruk
-    - naemon-thruk-reporting
     - python-passlib
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-thruk-libs-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-thruk-reporting-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-thruk-1.0.3-1.rhel6.x86_64.rpm
 
 - name: set thruk admin password
   tags:

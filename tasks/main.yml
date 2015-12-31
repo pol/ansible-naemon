@@ -1,48 +1,101 @@
 ---
 
 # Naemon
-- name: add repository key
-  tags:
-    - naemon
-    - naemon_only
-  apt_key: keyserver=keys.gnupg.net id='F8C1CA08A57B9ED7' state=present
+#
+# Started with the base playbook, modified for centos based on http://www.naemon.org/documentation/usersguide/quickstart-centos.html
 
-- name: add naemon repository
+- name: add epel repo
   tags:
     - naemon
     - naemon_only
-  apt_repository: repo='deb http://labs.consol.de/repo/stable/debian {{ansible_distribution_release}} main' update_cache=yes state=present
+  yum:
+    name: http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
 
 - name: install naemon and dependancies
   tags:
     - naemon
     - naemon_only
-  apt: name={{ item }} update_cache=yes state=present
+  yum: 
+    name: "{{ item }}"
+    state: present
   with_items:
+    - dejavu-fonts-common 
+    - perl 
+    - xorg-x11-server-Xvfb 
+    - wget 
+    - gd 
+    - libXpm 
+    - httpd
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-core-dbg-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-core-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-devel-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-livestatus-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/libnaemon-1.0.3-1.rhel6.x86_64.rpm
+    - http://labs.consol.de/naemon/release/v1.0.3/rhel6/x86_64/naemon-tools-1.0.3-1.rhel6.x86_64.rpm
+
+- name: disable selinux
+  tags:
     - naemon
-    - naemon-core
-    - naemon-livestatus
-    - nagios-plugins
+    - naemon_only
+  selinux: state=disabled
+
+- name: permanently disable selinux
+  tags:
+    - naemon
+    - naemon_only  
+  lineinfile: 
+    dest: /etc/selinux/config 
+    regexp: ^SELINUX= 
+    line: SELINUX=disabled
 
 - name: change naemon plugins directory
   tags:
     - naemon
     - naemon_only
-  lineinfile: dest=/etc/naemon/resource.cfg regexp='/usr/lib/naemon/plugins$' line='$USER1$=/usr/lib/nagios/plugins' backrefs=yes
+  lineinfile: 
+    dest: /etc/naemon/resource.cfg 
+    regexp: '^\$USER1\$=/usr/lib/naemon/plugins$' 
+    line: '$USER1$=/usr/lib64/nagios/plugins' 
+    backrefs: yes
   notify: restart naemon
 
 - name: set naemon configuration
   tags:
     - naemon
     - naemon_only
-  template: src=naemon.cfg.j2 dest=/etc/naemon/naemon.cfg owner=naemon group=naemon mode=0644
+  template: 
+    src: naemon.cfg.j2 
+    dest: /etc/naemon/naemon.cfg 
+    owner: naemon 
+    group: naemon 
+    mode: 0644
   notify: restart naemon
 
-- name: check naemon rights
+- name: install Nagios plugins
   tags:
     - naemon
     - naemon_only
-  file: path=/var/cache/naemon/live mode=777
+  yum: 
+    name: "{{item}}" 
+    state: present
+  with_items:
+    - nagios-plugins 
+    - nagios-plugins-all 
+    - nagios-plugins-nrpe 
+    - nrpe
+
+- name: start the services and enable them
+  tags:
+    - naemon
+    - naemon_only
+  service: 
+    name: "{{item}}"
+    state: started
+    enabled: yes
+  with_items:
+    - httpd
+    - naemon
 
 # Thruk
 - include: thruk.yml

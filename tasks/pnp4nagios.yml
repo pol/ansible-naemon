@@ -1,15 +1,15 @@
 ---
-
 - name: install pnp4nagios dependancies
-  apt: name={{ item }} update_cache=yes state=present
+  yum: name={{ item }} update_cache=yes state=present
   with_items:
     - rrdtool
-    - librrds-perl
-    - g++
-    - php5-cli
-    - php5-gd
-    - libapache2-mod-php5
+    - rrdtool-perl
+    - gcc-c++
     - make
+    - php
+    - php-cli
+    - php-gd
+    - perl-Time-HiRes
 
 - stat: path=/usr/local/pnp4nagios/bin/npcd
   register: npcd_bin
@@ -45,9 +45,9 @@
   service: name=npcd state=started enabled=yes
 
 - name: updating apache configuration
-  replace: dest=/etc/apache2/conf.d/pnp4nagios.conf regexp="{{item.regexp}}" replace="{{item.replace}}"
+  replace: dest=/etc/httpd/conf.d/pnp4nagios.conf regexp="{{item.regexp}}" replace="{{item.replace}}"
   with_items:
-    - { regexp: '(AuthUserFile\s+).*nagios.*', replace: '\1/etc/naemon/htpasswd\2' }
+    - { regexp: '(AuthUserFile\s+).*nagios.*$', replace: '\1/etc/naemon/htpasswd' }
     - { regexp: 'Nagios', replace: 'Naemon' }
 
 - name: updating pnp4nagios configuration

@@ -6,4 +6,4 @@
 
 - name: restart apache
   tags: naemon
-  service: name=apache2 state=restarted
+  service: name=httpd state=restarted
