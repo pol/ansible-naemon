@@ -1,15 +1,16 @@
 ---
 galaxy_info:
-  author: "Pierre Mavro"
-  company: 
+  author: "Pol Llovet"
+  description: "Install Naemon, Thruk and Pnp4Nagios; based on original scripts by Pierre Mavro, modified for CentOS."
+  company: Montana State University
   license: GPL
-  min_ansible_version: 1.4
+  min_ansible_version: 1.9
   platforms:
-   - name: Debian
-     versions:
-      - wheezy
-  categories:
-   - system
-   - monitoring
+  - name: EL
+    versions:
+    - 6.7
+  galaxy_tags:
+    - system
+    - monitoring
 dependencies: []
 

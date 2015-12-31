@@ -1,9 +1,11 @@
----
-
+##
 # Naemon
 #
 # Started with the base playbook, modified for centos based on http://www.naemon.org/documentation/usersguide/quickstart-centos.html
+# 2015-12 Modified from the original by Pol Llovet <pol.llovet@gmail.com>
+#
 
+---
 - name: add epel repo
   tags:
     - naemon

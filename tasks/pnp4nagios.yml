@@ -1,3 +1,6 @@
+##
+# 2015-12 Modified from the original by Pol Llovet <pol.llovet@gmail.com>
+#
 ---
 - name: install pnp4nagios dependancies
   yum: name={{ item }} update_cache=yes state=present
