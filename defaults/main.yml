@@ -1,7 +1,9 @@
+# NOTE: these can be set in a calling playbook (that calls the role), if you need to override.
+
 # Set it to True if you want to install Thruk
 install_thruk: False
-# Set the Thruk Admin user password
-thruk_admin_password: <password>
+# Set the Thruk Admin user password to a random 25 char password
+thruk_admin_password: "{{ lookup('password', 'credentials/naemon/naemonpass') }}"
 # Set it to True if you want to install php4nagios
 install_pnp4nagios: False
 # Set wished pnp4nagios version

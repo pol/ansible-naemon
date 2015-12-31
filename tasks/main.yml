@@ -6,6 +6,10 @@
 #
 
 ---
+- name: check the admin pass status
+  debug: 
+    msg: "Admin pass: {{thruk_admin_password}}"
+
 - name: add epel repo
   tags:
     - naemon
@@ -98,6 +102,17 @@
   with_items:
     - httpd
     - naemon
+
+- name: open 80 and 443 in iptables for web traffic
+  tags:
+    - naemon
+    - thruk
+    - pnp4nagios
+    - naemon_only
+  iptables: chain=INPUT jump=ACCEPT protocol=tcp destination_port={{item}} comment="Allow {{item}} web traffic"
+  with_items:
+    - 80
+    - 443
 
 # Thruk
 - include: thruk.yml
